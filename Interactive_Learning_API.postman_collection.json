@@ -1,0 +1,538 @@
+{
+	"info": {
+		"_postman_id": "8a32b3f1-d790-4e56-9b88-51829e7178a9",
+		"name": "Interactive English Learning API",
+		"description": "Postman Collection for AI-Powered Interactive English Learning Environment (Saudi High School - CEFR B1). Includes automatic token management and complete conversation lifecycle.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "session_id",
+			"value": "1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "1.1 Student Login (By Symbolic Code)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('token', jsonData.token);",
+									"        console.log('Auth token auto-saved:', jsonData.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"STD10101\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Log in using student symbolic code (e.g. STD10101). Automatically captures and saves bearer token."
+					},
+					"response": []
+				},
+				{
+					"name": "1.2 Student Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Revoke current access token."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Scenarios",
+			"item": [
+				{
+					"name": "2.1 List All Scenarios",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/scenarios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"scenarios"
+							]
+						},
+						"description": "Fetch the 8 B1 speaking scenarios with topics, vocabulary, and communicative functions."
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 Get Scenario Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/scenarios/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"scenarios",
+								"1"
+							]
+						},
+						"description": "Get detailed info for a single scenario (e.g. Scenario 1: Self Introduction)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Sessions",
+			"item": [
+				{
+					"name": "3.1 List Student Sessions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sessions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sessions"
+							]
+						},
+						"description": "Get all past and current learning sessions for the authenticated student."
+					},
+					"response": []
+				},
+				{
+					"name": "3.2 Create Session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.id) {",
+									"        pm.collectionVariables.set('session_id', jsonData.data.id);",
+									"        console.log('Session ID auto-saved:', jsonData.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"scenario_id\": 1,\n    \"session_number\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sessions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sessions"
+							]
+						},
+						"description": "Create a new session for a specific scenario (1-8). Auto-saves the new session_id into variables."
+					},
+					"response": []
+				},
+				{
+					"name": "3.3 Start Session (Ahmad Greeting)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sessions/{{session_id}}/start",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sessions",
+								"{{session_id}}",
+								"start"
+							]
+						},
+						"description": "Transitions session to 'conversation' and triggers Ahmad's introductory greeting."
+					},
+					"response": []
+				},
+				{
+					"name": "3.4 Get Session Details & Turns",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sessions/{{session_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sessions",
+								"{{session_id}}"
+							]
+						},
+						"description": "Fetch the full transcript and metadata for all speaking turns in this session."
+					},
+					"response": []
+				},
+				{
+					"name": "3.5 End Session",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/sessions/{{session_id}}/end",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sessions",
+								"{{session_id}}",
+								"end"
+							]
+						},
+						"description": "Finish the session, calculate duration in seconds, and mark status as completed."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Interactive Speaking",
+			"item": [
+				{
+					"name": "4.1 Student Speaks (Correct Turn)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"text\": \"Hello Ahmad! My name is Salem and I am 16 years old. I live in Abha.\",\n    \"confidence\": 0.98\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sessions/{{session_id}}/speak",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sessions",
+								"{{session_id}}",
+								"speak"
+							]
+						},
+						"description": "Send student speech to AI. Ahmad responds naturally with feedback_type: 'none'."
+					},
+					"response": []
+				},
+				{
+					"name": "4.2 Student Speaks (Grammar Error -> Recast Feedback)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"text\": \"I have 16 years and I like English very much.\",\n    \"confidence\": 0.95\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sessions/{{session_id}}/speak",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sessions",
+								"{{session_id}}",
+								"speak"
+							]
+						},
+						"description": "Send an utterance with a common age error. Ahmad reformulates implicitly (Recast)."
+					},
+					"response": []
+				},
+				{
+					"name": "4.3 Student Speaks (Short / Unclear -> Clarification)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"text\": \"Hi\",\n    \"confidence\": 0.90\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sessions/{{session_id}}/speak",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"sessions",
+								"{{session_id}}",
+								"speak"
+							]
+						},
+						"description": "Send short or incomplete utterance. Ahmad requests clarification with scaffolding."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

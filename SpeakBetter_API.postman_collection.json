@@ -1,0 +1,257 @@
+{
+  "info": {
+    "name": "SpeakBetter API - Interactive Learning",
+    "description": "Complete API collection for the SpeakBetter Interactive Learning platform.\n\nBase URL: https://interactive-learning.test/api/v1\n\nAll endpoints (except login) require Bearer token authentication.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "https://interactive-learning.test/api/v1" },
+    { "key": "token", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "1. Authentication",
+      "description": "Student login/logout using symbolic codes (no passwords).",
+      "item": [
+        {
+          "name": "1.1 Login (Student Code)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/login",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"STD10101\"\n}"
+            },
+            "description": "Login with student symbolic code.\n\nAvailable codes: STD10101 - STD10120 (Group 1), STD20101 - STD20101 (Group 2)\n\nReturns: student info + Bearer token\n\n⚠️ Save the 'token' from response for all subsequent requests."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) { pm.collectionVariables.set('token', json.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "1.2 Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/logout",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "Logout and invalidate the current token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Scenarios",
+      "description": "Browse available conversation scenarios (8 scenarios total).",
+      "item": [
+        {
+          "name": "2.1 List All Scenarios",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/scenarios",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "Get all 8 scenarios with titles, descriptions, vocabulary, and learning goals.\n\nScenarios:\n1. Introducing Yourself\n2. Daily Routines and Changes\n3. Hobbies and Interests\n4. Asking for Information\n5. Describing People and Places\n6. Opinions and Preferences\n7. Giving Suggestions\n8. Narrating Past Events"
+          }
+        },
+        {
+          "name": "2.2 Get Single Scenario",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/scenarios/1",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "Get details of a specific scenario by ID (1-8).\n\nReturns: title, communicative_function, vocabulary[], completion_criteria"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Sessions",
+      "description": "Create, start, manage, and end learning sessions.\n\nSession Flow:\n1. Create session (pick scenario)\n2. Start session → Ahmad greets\n3. Advance phases: intro → vocab → conversation → feedback → closing\n4. End session",
+      "item": [
+        {
+          "name": "3.1 List My Sessions",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/sessions",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "List all sessions for the logged-in student."
+          }
+        },
+        {
+          "name": "3.2 Create Session",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/sessions",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scenario_id\": 1,\n  \"session_number\": 1\n}"
+            },
+            "description": "Create a new session for a scenario.\n\nBody:\n- scenario_id: 1-8\n- session_number: 1-10 (optional, default 1)\n\nReturns: session object with ID"
+          }
+        },
+        {
+          "name": "3.3 Start Session ⭐",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/sessions/{session_id}/start",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "Start a session. Ahmad greets the student.\n\nReturns:\n- data.reply: Ahmad's greeting text\n- data.audio: base64-encoded MP3 (Ahmad's voice via ElevenLabs)\n- data.audio_format: 'mp3'\n- data.scenario: { title, vocabulary[], communicative_function, number }\n- data.phase: { current_phase, remaining_total, remaining_in_phase, timeline[] }\n\n⭐ This is where the session begins. Phase starts at 'intro'."
+          }
+        },
+        {
+          "name": "3.4 Get Session Details",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/sessions/{session_id}",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "Get session details including all conversation turns."
+          }
+        },
+        {
+          "name": "3.5 Get Phase Info",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/sessions/{session_id}/phase",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "Get current phase timing info.\n\nReturns:\n- phase.current_phase: 'intro' | 'vocab' | 'conversation' | 'feedback' | 'closing'\n- phase.remaining_total: seconds remaining in 40min session\n- phase.remaining_in_phase: seconds remaining in current phase\n- phase.timeline: array of phase objects with { key, label, is_current, is_done }"
+          }
+        },
+        {
+          "name": "3.6 Advance Phase ⭐",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/sessions/{session_id}/advance-phase",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "Move to the next phase.\n\nPhase order: intro → vocab → conversation → feedback → closing\n\nReturns:\n- data.phase: updated phase info\n- data.message: Ahmad's message for the new phase\n- data.audio: base64 MP3 of Ahmad saying the message\n- data.audio_format: 'mp3'\n- data.done: true if session is complete (after closing phase)"
+          }
+        },
+        {
+          "name": "3.7 End Session",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/sessions/{session_id}/end",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "End session early or after completion.\n\nReturns:\n- stats.total_turns: total conversation turns\n- stats.student_turns: student's turn count\n- stats.correct_turns: correct responses\n- stats.duration_seconds: total session time\n- stats.duration_formatted: 'M:SS'"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Conversation",
+      "description": "The core conversation API — student speaks, Ahmad responds.",
+      "item": [
+        {
+          "name": "4.1 Speak to Ahmad ⭐⭐",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/sessions/{session_id}/speak",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"My name is Menna. I am a student.\",\n  \"confidence\": 0.85\n}"
+            },
+            "description": "Send student's speech text to Ahmad. Ahmad responds with AI-generated reply + audio.\n\nBody:\n- text: student's speech (from browser Speech Recognition)\n- confidence: 0.0-1.0 (speech recognition confidence)\n\nReturns:\n- data.reply: Ahmad's text response\n- data.audio: base64 MP3 (Ahmad's voice)\n- data.audio_format: 'mp3'\n- data.feedback_type: 'none' | 'recast' | 'clarification' | 'model'\n- data.feedback_level: 0 (correct) | 1 (recast) | 2 (clarification) | 3 (model)\n- data.feedback_text: the corrective feedback text\n- data.attempt_count: which attempt (1-3)\n- data.done: true if conversation phase should end\n\n⭐ This is the MAIN API — handles LLM (GPT-4o-mini) + TTS (ElevenLabs)"
+          }
+        },
+        {
+          "name": "4.2 Text-to-Speech (TTS)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/tts",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Hello! I am Ahmad. Can you hear me clearly?\"\n}"
+            },
+            "description": "Convert any text to Ahmad's voice (ElevenLabs cloned voice).\n\nUsed for:\n- Speaker test in system check\n- Vocabulary word pronunciation\n- Any text that needs Ahmad's voice\n\nReturns:\n- data.audio: base64 MP3\n- data.audio_format: 'mp3'"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Simli (Avatar Animation)",
+      "description": "Simli integration for lip-sync animated avatar.\n\nFlow:\n1. Get session token from backend\n2. Use token to connect SimliClient (WebRTC)\n3. Send audio data to Simli for lip sync",
+      "item": [
+        {
+          "name": "5.1 Get Simli Token",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/simli/token",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "Get Simli session token (proxied through backend to protect API key).\n\nReturns:\n- session_token: string (use with SimliClient)\n- face_id: the Simli face ID"
+          }
+        },
+        {
+          "name": "5.2 Get ICE Servers",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/simli/ice",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "description": "Get ICE servers for WebRTC NAT traversal.\n\nReturns: array of ICE server objects"
+          }
+        }
+      ]
+    }
+  ]
+}
