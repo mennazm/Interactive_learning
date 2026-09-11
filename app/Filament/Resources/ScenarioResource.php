@@ -53,10 +53,10 @@ class ScenarioResource extends Resource
             Tables\Filters\TernaryFilter::make('is_active')->label('مفعّل'),
         ])
         ->actions([
-            Actions\EditAction::make(),
+            Tables\Actions\EditAction::make(),
         ])
         ->bulkActions([
-            Actions\BulkActionGroup::make([Actions\DeleteBulkAction::make()]),
+            Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()]),
         ]);
     }
 
