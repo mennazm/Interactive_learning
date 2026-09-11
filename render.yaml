@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: speakbetter-api
+    runtime: docker
+    plan: free
+    envVars:
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DB_CONNECTION
+        value: mysql
