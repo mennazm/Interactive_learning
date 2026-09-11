@@ -4,8 +4,8 @@ namespace App\Filament\Resources\SessionResource\RelationManagers;
 
 use Filament\Actions;
 use Filament\Forms\Components;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -14,9 +14,9 @@ class ConversationTurnsRelationManager extends RelationManager
     protected static string $relationship = 'conversationTurns';
     protected static ?string $title = 'سجل المحادثة';
 
-    public function form(Schema $schema): Schema
+    public function form(Form $form): Form
     {
-        return $schema->components([
+        return $form->schema([
             Components\TextInput::make('turn_number')->label('رقم الدور')->disabled(),
             Components\TextInput::make('speaker')->label('المتحدث')->disabled(),
             Components\Textarea::make('text_content')->label('النص')->disabled()->columnSpanFull(),
