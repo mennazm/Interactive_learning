@@ -12,10 +12,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY . .
 
-# Create .env before composer so artisan doesn't crash
 RUN cp .env.example .env && php -r "echo 'APP_KEY=base64:'.base64_encode(random_bytes(32)).PHP_EOL;" >> .env
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+RUN php artisan filament:assets
 
 EXPOSE 10000
 
