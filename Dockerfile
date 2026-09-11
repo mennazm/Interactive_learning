@@ -20,4 +20,4 @@ RUN php artisan filament:assets
 
 EXPOSE 10000
 
-CMD php artisan serve --host=0.0.0.0 --port=10000
+CMD rm -f .env && php artisan config:clear && php artisan serve --host=0.0.0.0 --port=10000
