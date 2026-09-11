@@ -12,9 +12,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Create .env before composer so artisan doesn't crash
+RUN cp .env.example .env && php -r "echo 'APP_KEY=base64:'.base64_encode(random_bytes(32)).PHP_EOL;" >> .env
 
-RUN php artisan config:clear && php artisan route:clear && php artisan view:clear
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 EXPOSE 10000
 
