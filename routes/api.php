@@ -7,9 +7,11 @@ use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\ScenarioController;
 
 Route::prefix('v1')->group(function () {
-    Route::post('/auth/login', [AuthController::class, 'login']);
+    // Login with rate limiting: max 5 attempts per minute per IP
+    Route::post('/auth/login', [AuthController::class, 'login'])
+        ->middleware('throttle:5,1');
     
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('auth:student-api')->group(function () {
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         
         Route::get('/scenarios', [ScenarioController::class, 'index']);

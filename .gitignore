@@ -21,3 +21,4 @@ yarn-error.log
 *.docx
 fix_firewall*.ps1
 test_conn.php
+.env

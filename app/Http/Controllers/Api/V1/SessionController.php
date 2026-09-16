@@ -36,6 +36,25 @@ class SessionController extends Controller
 
         $sessionNumber = $request->input('session_number', 1);
 
+        // التحقق من أن الجلسة متاحة (مش مقفلة)
+        if (!Session::isUnlockedForStudent($request->user(), $sessionNumber)) {
+            return response()->json([
+                'message' => 'This session is locked. Complete the previous session first or wait for the scheduled week.',
+            ], 403);
+        }
+
+        // التحقق من عدم وجود جلسة سابقة لنفس الرقم
+        $existing = Session::where('student_id', $request->user()->id)
+            ->where('session_number', $sessionNumber)
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'message' => 'Session already exists',
+                'data' => $existing->load('scenario'),
+            ]);
+        }
+
         $session = Session::create([
             'student_id' => $request->user()->id,
             'scenario_id' => $request->scenario_id,
@@ -87,19 +106,36 @@ class SessionController extends Controller
         $startedAt = $session->started_at ?? now();
         $duration = (int) $startedAt->diffInSeconds(now());
 
-        $session->update([
-            'status' => SessionStatus::COMPLETED,
-            'ended_at' => now(),
-            'duration_seconds' => $duration,
-        ]);
-
         // Calculate real stats
         $totalTurns = ConversationTurn::where('session_id', $session->id)->count();
         $studentTurns = ConversationTurn::where('session_id', $session->id)
             ->where('speaker', 'student')->count();
         $correctTurns = ConversationTurn::where('session_id', $session->id)
-            ->where('speaker', 'avatar')
+            ->where('speaker', 'student')
             ->where('is_correct', true)->count();
+
+        // حساب الأداء الوصفي
+        $accuracy = $studentTurns > 0 ? ($correctTurns / $studentTurns) : 0;
+        if ($accuracy >= 0.7) {
+            $performanceStatus = \App\Enums\PerformanceStatus::ACHIEVED;
+        } elseif ($accuracy >= 0.4) {
+            $performanceStatus = \App\Enums\PerformanceStatus::PARTIALLY_ACHIEVED;
+        } else {
+            $performanceStatus = \App\Enums\PerformanceStatus::NOT_ACHIEVED;
+        }
+
+        // نقطة قوة ونقطة تحسين
+        $strengthNote = $this->generateStrengthNote($accuracy, $studentTurns);
+        $improvementNote = $this->generateImprovementNote($accuracy);
+
+        $session->update([
+            'status' => SessionStatus::COMPLETED,
+            'ended_at' => now(),
+            'duration_seconds' => $duration,
+            'performance_status' => $performanceStatus,
+            'strength_note' => $strengthNote,
+            'improvement_note' => $improvementNote,
+        ]);
 
         $minutes = floor($duration / 60);
         $seconds = $duration % 60;
@@ -114,7 +150,30 @@ class SessionController extends Controller
                 'duration_seconds' => $duration,
                 'duration_formatted' => "{$minutes}:{$seconds}",
             ],
+            'performance' => [
+                'status' => $performanceStatus->value,
+                'label' => $performanceStatus->label(),
+                'emoji' => $performanceStatus->emoji(),
+                'strength' => $strengthNote,
+                'improvement' => $improvementNote,
+            ],
         ]);
+    }
+
+    private function generateStrengthNote(float $accuracy, int $turns): string
+    {
+        if ($accuracy >= 0.8) return 'Excellent use of vocabulary and grammar structures.';
+        if ($accuracy >= 0.6) return 'Good effort in maintaining the conversation flow.';
+        if ($turns >= 5) return 'Good participation and willingness to communicate.';
+        return 'You showed courage in practicing English conversation.';
+    }
+
+    private function generateImprovementNote(float $accuracy): string
+    {
+        if ($accuracy < 0.3) return 'Try to use complete sentences with subject and verb.';
+        if ($accuracy < 0.5) return 'Focus on using the target vocabulary from the lesson.';
+        if ($accuracy < 0.7) return 'Try to make your sentences longer and more detailed.';
+        return 'Challenge yourself to use more complex sentence structures.';
     }
 
     /**
