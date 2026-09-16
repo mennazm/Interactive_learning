@@ -47,6 +47,7 @@ class ConversationService
 
         return [
             'greeting' => $greeting,
+            'reply' => $greeting,
             'scenario' => $scenario ? [
                 'title' => $scenario->title,
                 'title_ar' => $scenario->title_ar,

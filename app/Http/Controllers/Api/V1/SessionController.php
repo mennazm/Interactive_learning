@@ -83,7 +83,8 @@ class SessionController extends Controller
 
         // Generate audio for Ahmad's greeting
         $tts = app(\App\Services\Contracts\TTSServiceInterface::class);
-        $audioBase64 = $tts->synthesize($result['reply'] ?? '');
+        $greetingText = $result['reply'] ?? $result['greeting'] ?? '';
+        $audioBase64 = $tts->synthesize($greetingText);
         $result['audio'] = $audioBase64;
         $result['audio_format'] = !empty($audioBase64) ? 'mp3' : null;
 
