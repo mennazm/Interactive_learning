@@ -56,7 +56,7 @@ class ScenarioController extends Controller
             'data' => $result,
             'progress' => [
                 'completed' => $completedCount,
-                'total' => 10,
+                'total' => 8,
                 'current_week' => Setting::getCurrentWeek(),
                 'experiment_started' => Setting::getExperimentStartDate() !== null,
             ],
