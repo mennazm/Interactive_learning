@@ -118,15 +118,35 @@ class OpenAILLMService implements LLMServiceInterface
         $infoCount = count(array_filter($collectedInfo));
         $totalSteps = 5;
         $completion = min(1.0, round($infoCount / $totalSteps, 2));
+        $isDone = $completion >= 1.0 || $studentTurns >= 7;
+
+        // Map feedback level
+        $feedbackLevel = 0;
+        if ($feedbackType === 'recast') $feedbackLevel = 1;
+        elseif ($feedbackType === 'clarification') $feedbackLevel = 2;
+        elseif ($feedbackType === 'model') $feedbackLevel = 3;
 
         return [
             'reply' => $reply,
-            'is_correct' => empty($errors),
-            'errors' => $errors,
+            'emotion' => empty($errors) ? 'smile' : 'encourage',
+            'feedback_level' => $feedbackLevel,
             'feedback_type' => $feedbackType,
             'feedback_text' => $feedbackText,
+            'text_show' => $feedbackText,
+            'feedback_target' => empty($errors) ? 'none' : 'grammar_vocab',
+            'done_phase' => $isDone,
+            'mastery_state' => $completion >= 0.8 ? 'met' : ($completion >= 0.4 ? 'partial' : 'not_yet'),
             'task_completion' => $completion,
-            'should_move_next' => $completion >= 1.0 || $studentTurns >= 7,
+            'score_hint' => [
+                'grammar_vocab' => empty($errors) ? 4 : 2,
+                'discourse' => min(5, $studentTurns + 1),
+                'pronunciation' => 4,
+                'interactive' => 4,
+            ],
+            'next_action' => $isDone ? 'close' : ($feedbackType === 'recast' ? 'recast' : ($feedbackType === 'clarification' ? 'clarify' : 'ask')),
+            'is_correct' => empty($errors),
+            'errors' => $errors,
+            'should_move_next' => $isDone,
         ];
     }
 

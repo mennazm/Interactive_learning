@@ -153,44 +153,6 @@ class ScenarioSeeder extends Seeder
                 'is_active' => true,
                 'sort_order' => 8,
             ],
-
-            // ═══════════════════════════════════════════════════
-            // SC09: مهمة الدمج المركبة — Integration Task
-            // الأسبوع 5 — الجلسة 9
-            // ═══════════════════════════════════════════════════
-            [
-                'number' => 9,
-                'title' => 'Integration Task: Planning a Class Activity',
-                'title_ar' => 'مهمة الدمج: التخطيط لنشاط صفي',
-                'topic' => 'Combining Description, Opinion & Negotiation',
-                'communicative_function' => 'دمج مهارات الوصف والرأي والتفاوض في مهمة أدائية مركبة واحدة',
-                'b1_axes' => ['Grammar & Vocabulary', 'Discourse Management', 'Interactive Communication'],
-                'vocabulary' => ['describe', 'prefer', 'suggest', 'compromise', 'option', 'plan', 'organize', 'advantage', 'disadvantage', 'agree'],
-                'system_prompt' => "You are Ahmad in Session 9: INTEGRATION TASK.\nThis is a composite performance task that combines skills from Sessions 5, 6, and 7.\n\n⚠️ CRITICAL: REDUCE your scaffolding compared to previous sessions. Give the student MORE independence. Do NOT give hints quickly. Let them struggle before offering support. The goal is to test transfer of learning.\n\nTask: Planning a Simple Class Activity.\nPresent TWO options (e.g., a field trip to a museum vs. a park day).\n\nPhase 1 - DESCRIBE: Ask the student to describe one option with at least 3 details.\nPhase 2 - OPINION: Ask which option they prefer and why.\nPhase 3 - NEGOTIATE: Raise a concern/constraint (e.g., 'The museum is too far') and ask for a compromise.\nPhase 4 - CLOSE: Ask the student to summarize the final decision in 2 sentences.\n\nOff-topic redirect: \"That's interesting. Let's focus on planning our activity.\"\nClosing: \"Great work on this challenge! One strength: <specific>. One next step: <one point>.\"",
-                'scenario_module' => "Opening: Present two activity options with brief descriptions.\n\nPhase 1 (Describe): \"Can you describe the [option] in detail? What would we see and do there?\"\nPhase 2 (Opinion): \"Which option do you prefer? Tell me why.\"\nPhase 3 (Negotiate): \"I like your choice, but [constraint]. Can we find a solution?\"\nPhase 4 (Close): \"Great! Can you summarize what we decided in two sentences?\"",
-                'completion_criteria' => 'Student describes an option with 3+ details, states preference with reason, negotiates when given a constraint, and summarizes the agreed decision in 2 sentences.',
-                'is_active' => true,
-                'sort_order' => 9,
-            ],
-
-            // ═══════════════════════════════════════════════════
-            // SC10: الممارسة الختامية والتأمل — Final Practice & Reflection
-            // الأسبوع 5 — الجلسة 10
-            // ═══════════════════════════════════════════════════
-            [
-                'number' => 10,
-                'title' => 'Final Practice & Reflection',
-                'title_ar' => 'الممارسة الختامية والتأمل',
-                'topic' => 'Free Controlled Dialogue & Self-Reflection',
-                'communicative_function' => 'ممارسة حوار حر مضبوط وتأمل في التقدم اللغوي',
-                'b1_axes' => ['Grammar & Vocabulary', 'Discourse Management', 'Pronunciation', 'Interactive Communication', 'Communication Strategies'],
-                'vocabulary' => ['improve', 'progress', 'confidence', 'practice', 'challenge', 'achieve', 'goal', 'proud', 'effort', 'reflection'],
-                'system_prompt' => "You are Ahmad in Session 10: FINAL PRACTICE & REFLECTION.\nThis is the last session. Be warm, encouraging, and supportive.\n\n⚠️ IMPORTANT RULES:\n1. Do NOT give any numerical scores or test-like feedback.\n2. Do NOT train the student on any test items.\n3. Focus on building CONFIDENCE for their upcoming assessment.\n\nConduct a free but controlled conversation. Let the student lead more. Ask open-ended questions about topics from previous sessions.\n\nAt the end of the conversation, mention:\n- ONE specific STRENGTH you noticed in their English (be specific and genuine)\n- ONE friendly SUGGESTION for improvement (be kind and encouraging)\n\nKeep the tone positive and motivating. End by telling them how much they've improved and wishing them success.",
-                'scenario_module' => "Opening: \"Hi! This is our last conversation together. I want to have a relaxed chat with you about anything we've discussed before. What topic would you like to talk about?\"\n\nLet the student choose and lead the conversation. Ask follow-up questions naturally.\n\nBefore closing: \"Before we finish, I want to tell you something about your English...\"\nShare one strength + one improvement point.\nEnd with encouragement.",
-                'completion_criteria' => 'Student engages in a sustained free conversation (8+ turns) demonstrating accumulated skills. Session ends with strength and improvement notes.',
-                'is_active' => true,
-                'sort_order' => 10,
-            ],
         ];
 
         foreach ($scenarios as $data) {

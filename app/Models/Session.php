@@ -48,13 +48,16 @@ class Session extends Model
      */
     public static function isUnlockedForStudent(Student $student, int $sessionNumber): bool
     {
-        $availableNumbers = Setting::getAvailableSessionNumbers();
-        if (!in_array($sessionNumber, $availableNumbers)) {
-            return false;
-        }
-
+        // الجلسة الأولى متاحة دائماً لأي طالب
         if ($sessionNumber === 1) {
             return true;
+        }
+
+        $availableNumbers = Setting::getAvailableSessionNumbers();
+
+        // لو لم يبدأ جدول التجربة بعد، نعتبر الجلسات متاحة حسب إكمال السابقة
+        if (!empty($availableNumbers) && !in_array($sessionNumber, $availableNumbers)) {
+            return false;
         }
 
         // الجلسة السابقة لازم تكون مكتملة

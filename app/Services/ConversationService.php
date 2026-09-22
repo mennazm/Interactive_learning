@@ -28,13 +28,10 @@ class ConversationService
 
         $scenario = $session->scenario;
 
-        // Get the opening question from scenario_module
-        $greeting = "Hello! I'm Ahmad. Nice to meet you!";
-        if ($scenario && $scenario->scenario_module) {
-            if (preg_match('/Opening question:\s*"([^"]+)"/i', $scenario->scenario_module, $matches)) {
-                $greeting = $matches[1];
-            }
-        }
+        // Intro greeting: welcome + today's topic (NOT the opening question)
+        // The opening question is asked later when entering CONVERSATION phase
+        $topicTitle = $scenario ? $scenario->title : 'speaking English';
+        $greeting = "Hello! I'm Ahmad, your conversation partner. Welcome! Today, we will practice: {$topicTitle}. First, let me show you some useful words for our conversation.";
 
         // Save Ahmad's first turn
         ConversationTurn::create([
