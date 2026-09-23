@@ -29,10 +29,9 @@ class DatabaseSeeder extends Seeder
 
         // Seed Initial Test Students
         $students = [
-            ['code' => 'STD10101', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية أبها الأولى', 'is_active' => true],
-            ['code' => 'STD10102', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية أبها الأولى', 'is_active' => true],
-            ['code' => 'STD10103', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الفاروق', 'is_active' => true],
-            ['code' => 'STD20101', 'group' => StudentGroup::CONTROL, 'school_name' => 'ثانوية اليرموك', 'is_active' => true],
+            ['code' => 'STU001', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية أبها الأولى', 'is_active' => true],
+            ['code' => 'STU002', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية أبها الأولى', 'is_active' => true],
+            ['code' => 'STU003', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الفاروق', 'is_active' => true],
         ];
 
         foreach ($students as $student) {
