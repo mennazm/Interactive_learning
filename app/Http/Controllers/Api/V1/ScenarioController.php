@@ -50,7 +50,8 @@ class ScenarioController extends Controller
         // التقدم الكلي
         $completedCount = Session::where('student_id', $student->id)
             ->where('status', SessionStatus::COMPLETED)
-            ->count();
+            ->distinct()
+            ->count('session_number');
 
         return response()->json([
             'data' => $result,
