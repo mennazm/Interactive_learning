@@ -32,6 +32,21 @@ class DatabaseSeeder extends Seeder
             ['code' => 'STU001', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية أبها الأولى', 'is_active' => true],
             ['code' => 'STU002', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية أبها الأولى', 'is_active' => true],
             ['code' => 'STU003', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الفاروق', 'is_active' => true],
+            ['code' => 'STU004', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الفاروق', 'is_active' => true],
+            ['code' => 'STU005', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الملك خالد', 'is_active' => true],
+            ['code' => 'STU006', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الملك خالد', 'is_active' => true],
+            ['code' => 'STU007', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الفيصل', 'is_active' => true],
+            ['code' => 'STU008', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الفيصل', 'is_active' => true],
+            ['code' => 'STU009', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الصديق', 'is_active' => true],
+            ['code' => 'STU010', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الصديق', 'is_active' => true],
+            ['code' => 'STU011', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية أبها الأولى', 'is_active' => true],
+            ['code' => 'STU012', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية أبها الأولى', 'is_active' => true],
+            ['code' => 'STU013', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الفاروق', 'is_active' => true],
+            ['code' => 'STU014', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الملك خالد', 'is_active' => true],
+            ['code' => 'STU015', 'group' => StudentGroup::EXPERIMENTAL, 'school_name' => 'ثانوية الفيصل', 'is_active' => true],
+            ['code' => 'STU016', 'group' => StudentGroup::CONTROL,      'school_name' => 'ثانوية أبها الأولى', 'is_active' => true],
+            ['code' => 'STU017', 'group' => StudentGroup::CONTROL,      'school_name' => 'ثانوية الفاروق',     'is_active' => true],
+            ['code' => 'STU018', 'group' => StudentGroup::CONTROL,      'school_name' => 'ثانوية الملك خالد',  'is_active' => true],
         ];
 
         foreach ($students as $student) {
