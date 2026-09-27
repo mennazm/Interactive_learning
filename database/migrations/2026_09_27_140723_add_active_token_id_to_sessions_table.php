@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('sessions', function (Blueprint $table) {
-            $table->unsignedBigInteger('active_token_id')->nullable()->after('status');
+        Schema::table('learning_sessions', function (Blueprint $table) {
+            $table->unsignedBigInteger('active_token_id')->nullable();
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sessions', function (Blueprint $table) {
+        Schema::table('learning_sessions', function (Blueprint $table) {
             $table->dropColumn('active_token_id');
         });
     }
