@@ -29,8 +29,9 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid symbolic code'], 401);
         }
 
-        // Delete old tokens to prevent accumulation (keep max 1 active token)
-        $student->tokens()->delete();
+        // Allow multi-device login: don't delete old tokens so students
+        // can use their account on multiple devices simultaneously.
+        // Old single-device policy: $student->tokens()->delete();
 
         // Create new token using Sanctum
         $token = $student->createToken('auth_token')->plainTextToken;

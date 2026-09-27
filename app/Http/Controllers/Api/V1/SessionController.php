@@ -12,6 +12,46 @@ use App\Services\ConversationService;
 class SessionController extends Controller
 {
     /**
+     * Check if the session is actively used by another device.
+     * Returns error response if blocked, null if OK to proceed.
+     */
+    private function checkDeviceConflict(Request $request, Session $session)
+    {
+        $currentTokenId = $request->user()->currentAccessToken()->id;
+
+        // If session has an active token and it's not ours, block it
+        if (
+            $session->active_token_id &&
+            $session->active_token_id !== $currentTokenId &&
+            $session->status === SessionStatus::IN_PROGRESS
+        ) {
+            return response()->json([
+                'message' => 'This session is currently active on another device. Please close it there first.',
+                'error_code' => 'SESSION_ACTIVE_ON_OTHER_DEVICE',
+            ], 409);
+        }
+
+        return null;
+    }
+
+    /**
+     * Claim the session for the current device's token.
+     */
+    private function claimSession(Request $request, Session $session)
+    {
+        $session->update([
+            'active_token_id' => $request->user()->currentAccessToken()->id,
+        ]);
+    }
+
+    /**
+     * Release the session's device lock.
+     */
+    private function releaseSession(Session $session)
+    {
+        $session->update(['active_token_id' => null]);
+    }
+    /**
      * List student's sessions or create a new session for a scenario.
      */
     public function index(Request $request)
@@ -79,7 +119,14 @@ class SessionController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        // Check if another device is already using this session
+        $conflict = $this->checkDeviceConflict($request, $session);
+        if ($conflict) return $conflict;
+
         $result = $conversationService->startSession($session);
+
+        // Claim session for this device
+        $this->claimSession($request, $session);
 
         // Generate audio for Ahmad's greeting
         $tts = app(\App\Services\Contracts\TTSServiceInterface::class);
@@ -136,6 +183,7 @@ class SessionController extends Controller
             'performance_status' => $performanceStatus,
             'strength_note' => $strengthNote,
             'improvement_note' => $improvementNote,
+            'active_token_id' => null, // Release device lock
         ]);
 
         $minutes = floor($duration / 60);
@@ -221,6 +269,10 @@ class SessionController extends Controller
         if ($session->student_id !== $request->user()->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
+
+        // Check if another device is already using this session
+        $conflict = $this->checkDeviceConflict($request, $session);
+        if ($conflict) return $conflict;
 
         $result = $conversationService->advancePhase($session);
 

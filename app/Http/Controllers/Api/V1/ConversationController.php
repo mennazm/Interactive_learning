@@ -8,6 +8,8 @@ use App\Models\Session;
 use App\Services\ConversationService;
 use App\Services\Contracts\TTSServiceInterface;
 
+use App\Enums\SessionStatus;
+
 class ConversationController extends Controller
 {
     public function __construct(
@@ -26,6 +28,19 @@ class ConversationController extends Controller
 
         if ($session->student_id !== $request->user()->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Check if another device is already using this session
+        $currentTokenId = $request->user()->currentAccessToken()->id;
+        if (
+            $session->active_token_id &&
+            $session->active_token_id !== $currentTokenId &&
+            $session->status === SessionStatus::IN_PROGRESS
+        ) {
+            return response()->json([
+                'message' => 'This session is currently active on another device. Please close it there first.',
+                'error_code' => 'SESSION_ACTIVE_ON_OTHER_DEVICE',
+            ], 409);
         }
 
         $confidence = $request->input('confidence', 1.0);

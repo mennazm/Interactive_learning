@@ -30,6 +30,7 @@ class Session extends Model
         'current_phase',
         'is_compensation',
         'resume_point',
+        'active_token_id',
     ];
 
     protected $casts = [
