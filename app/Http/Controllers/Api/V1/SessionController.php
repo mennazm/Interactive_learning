@@ -12,44 +12,51 @@ use App\Services\ConversationService;
 class SessionController extends Controller
 {
     /**
-     * Check if the session is actively used by another device.
-     * Returns error response if blocked, null if OK to proceed.
+     * Guard for speak/advancePhase: if this device is NOT the active one,
+     * return 401 so the frontend interceptor redirects to login.
      */
-    private function checkDeviceConflict(Request $request, Session $session)
+    private function guardActiveDevice(Request $request, Session $session)
     {
         $currentTokenId = $request->user()->currentAccessToken()->id;
 
-        // If session has an active token and it's not ours, block it
         if (
             $session->active_token_id &&
             $session->active_token_id !== $currentTokenId &&
             !in_array($session->status, [SessionStatus::NOT_STARTED, SessionStatus::COMPLETED, SessionStatus::INTERRUPTED])
         ) {
             return response()->json([
-                'message' => 'This session is currently active on another device. Please close it there first.',
-                'error_code' => 'SESSION_ACTIVE_ON_OTHER_DEVICE',
-            ], 409);
+                'message' => 'Unauthenticated.',
+            ], 401);
         }
 
         return null;
     }
 
     /**
-     * Claim the session for the current device's token.
+     * Claim the session for the current device.
+     * If session was in progress on another device, reset it to start fresh.
      */
     private function claimSession(Request $request, Session $session)
     {
-        $session->update([
-            'active_token_id' => $request->user()->currentAccessToken()->id,
-        ]);
-    }
+        $currentTokenId = $request->user()->currentAccessToken()->id;
+        $wasActiveOnOtherDevice = $session->active_token_id && $session->active_token_id !== $currentTokenId;
 
-    /**
-     * Release the session's device lock.
-     */
-    private function releaseSession(Session $session)
-    {
-        $session->update(['active_token_id' => null]);
+        // If taken over mid-session, reset it
+        if ($wasActiveOnOtherDevice && !in_array($session->status, [SessionStatus::NOT_STARTED, SessionStatus::COMPLETED, SessionStatus::INTERRUPTED])) {
+            // Clear old conversation turns
+            ConversationTurn::where('session_id', $session->id)->delete();
+
+            $session->update([
+                'status' => SessionStatus::NOT_STARTED,
+                'active_token_id' => $currentTokenId,
+                'current_phase' => null,
+                'started_at' => null,
+            ]);
+        } else {
+            $session->update([
+                'active_token_id' => $currentTokenId,
+            ]);
+        }
     }
     /**
      * List student's sessions or create a new session for a scenario.
@@ -119,14 +126,11 @@ class SessionController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Check if another device is already using this session
-        $conflict = $this->checkDeviceConflict($request, $session);
-        if ($conflict) return $conflict;
+        // Claim session for this device (resets if taken over mid-session)
+        $this->claimSession($request, $session);
+        $session->refresh();
 
         $result = $conversationService->startSession($session);
-
-        // Claim session for this device
-        $this->claimSession($request, $session);
 
         // Generate audio for Ahmad's greeting
         $tts = app(\App\Services\Contracts\TTSServiceInterface::class);
@@ -270,9 +274,9 @@ class SessionController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Check if another device is already using this session
-        $conflict = $this->checkDeviceConflict($request, $session);
-        if ($conflict) return $conflict;
+        // Guard: if another device took over, kick this one to login
+        $guard = $this->guardActiveDevice($request, $session);
+        if ($guard) return $guard;
 
         $result = $conversationService->advancePhase($session);
 

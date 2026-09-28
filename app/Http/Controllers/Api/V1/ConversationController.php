@@ -30,7 +30,7 @@ class ConversationController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Check if another device is already using this session
+        // Guard: if another device took over this session, kick to login
         $currentTokenId = $request->user()->currentAccessToken()->id;
         if (
             $session->active_token_id &&
@@ -38,9 +38,8 @@ class ConversationController extends Controller
             !in_array($session->status, [SessionStatus::NOT_STARTED, SessionStatus::COMPLETED, SessionStatus::INTERRUPTED])
         ) {
             return response()->json([
-                'message' => 'This session is currently active on another device. Please close it there first.',
-                'error_code' => 'SESSION_ACTIVE_ON_OTHER_DEVICE',
-            ], 409);
+                'message' => 'Unauthenticated.',
+            ], 401);
         }
 
         $confidence = $request->input('confidence', 1.0);
