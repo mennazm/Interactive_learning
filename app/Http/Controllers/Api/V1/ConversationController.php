@@ -35,7 +35,7 @@ class ConversationController extends Controller
         if (
             $session->active_token_id &&
             $session->active_token_id !== $currentTokenId &&
-            $session->status === SessionStatus::IN_PROGRESS
+            !in_array($session->status, [SessionStatus::NOT_STARTED, SessionStatus::COMPLETED, SessionStatus::INTERRUPTED])
         ) {
             return response()->json([
                 'message' => 'This session is currently active on another device. Please close it there first.',
