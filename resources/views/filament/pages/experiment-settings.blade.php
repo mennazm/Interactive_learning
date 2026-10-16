@@ -8,10 +8,16 @@
                 <div>
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">تاريخ البداية</label>
                     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-                    <input type="text" id="exp-date-picker" wire:model="experiment_start_date"
-                           placeholder="Pick a date..."
-                           dir="ltr" readonly
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white cursor-pointer" />
+                    <div class="flex gap-2 items-center">
+                        <input type="text" id="exp-date-picker" wire:model="experiment_start_date"
+                               placeholder="Pick a date..."
+                               dir="ltr" readonly
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white cursor-pointer" />
+                        <button type="button" onclick="document.getElementById('exp-date-picker')._flatpickr.clear(); @this.set('experiment_start_date', null);"
+                                class="mt-1 px-3 py-2 text-sm bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition" title="مسح التاريخ">
+                            ✕
+                        </button>
+                    </div>
                     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
                     <script>
                         document.addEventListener('DOMContentLoaded', function() {
