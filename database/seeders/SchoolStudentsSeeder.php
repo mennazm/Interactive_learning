@@ -12,13 +12,13 @@ class SchoolStudentsSeeder extends Seeder
      * Create students across 5 schools with varying sizes.
      * Code format: STU{school}-{number} (e.g., STU1-001, STU2-015)
      *
-     * School 1: ثانوية الملك عبدالله  — 15 تجريبية (001-015) + 15 ضابطة (016-030) = 30
+     * School 1: ثانوية الملك عبدالله  — 20 تجريبية (001-020) + 15 ضابطة (021-035) = 35
      * School 2: ثانوية الموهوبين       — 15 تجريبية (001-015) + 15 ضابطة (016-030) = 30
      * School 3: ثانوية النموذجية       — 10 تجريبية (001-010) + 10 ضابطة (011-020) = 20
      * School 4: ثانوية مدينة سلطان    — 10 تجريبية (001-010) + 10 ضابطة (011-020) = 20
      * School 5: ثانوية العرين          — 5 تجريبية  (001-005) + 5 ضابطة  (006-010) = 10
      *
-     * Total: 110 students
+     * Total: 115 students
      */
     public function run(): void
     {
@@ -30,8 +30,8 @@ class SchoolStudentsSeeder extends Seeder
         $schools = [
             1 => [
                 'name' => 'ثانوية الملك عبدالله',
-                'experimental' => ['from' => 1, 'to' => 15],
-                'control' => ['from' => 16, 'to' => 30],
+                'experimental' => ['from' => 1, 'to' => 20],
+                'control' => ['from' => 21, 'to' => 35],
             ],
             2 => [
                 'name' => 'ثانوية الموهوبين',
