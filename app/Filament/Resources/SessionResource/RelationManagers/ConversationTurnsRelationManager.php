@@ -49,7 +49,7 @@ class ConversationTurnsRelationManager extends RelationManager
             ])
             ->defaultSort('turn_number')
             ->actions([
-                Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make(),
             ]);
     }
 }
