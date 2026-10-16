@@ -9,10 +9,15 @@ use App\Enums\StudentGroup;
 class SchoolStudentsSeeder extends Seeder
 {
     /**
-     * Create students across 5 schools with varying sizes.
+     * Create experimental students across 5 schools.
      * Code format: STU{school}-{number} (e.g., STU1-001, STU2-015)
      *
- 
+     * School 1: ثانوية الملك عبدالله  — 20 طالب (001-020)
+     * School 2: ثانوية الموهوبين       — 15 طالب (001-015)
+     * School 3: ثانوية النموذجية       — 10 طالب (001-010)
+     * School 4: ثانوية مدينة سلطان    — 10 طالب (001-010)
+     * School 5: ثانوية العرين          — 5 طالب  (001-005)
+     *
      * Total: 60 students
      */
     public function run(): void
@@ -25,28 +30,23 @@ class SchoolStudentsSeeder extends Seeder
         $schools = [
             1 => [
                 'name' => 'ثانوية الملك عبدالله',
-                'experimental' => ['from' => 1, 'to' => 20],
-               
+                'from' => 1, 'to' => 20,
             ],
             2 => [
                 'name' => 'ثانوية الموهوبين',
-                'experimental' => ['from' => 1, 'to' => 15],
-               
+                'from' => 1, 'to' => 15,
             ],
             3 => [
                 'name' => 'ثانوية النموذجية',
-                'experimental' => ['from' => 1, 'to' => 10],
-               
+                'from' => 1, 'to' => 10,
             ],
             4 => [
                 'name' => 'ثانوية مدينة سلطان',
-                'experimental' => ['from' => 1, 'to' => 10],
-                
+                'from' => 1, 'to' => 10,
             ],
             5 => [
                 'name' => 'ثانوية العرين',
-                'experimental' => ['from' => 1, 'to' => 5],
-                
+                'from' => 1, 'to' => 5,
             ],
         ];
 
@@ -55,8 +55,7 @@ class SchoolStudentsSeeder extends Seeder
         foreach ($schools as $schoolNum => $school) {
             $schoolCount = 0;
 
-            // المجموعة التجريبية
-            for ($i = $school['experimental']['from']; $i <= $school['experimental']['to']; $i++) {
+            for ($i = $school['from']; $i <= $school['to']; $i++) {
                 $code = sprintf('STU%d-%03d', $schoolNum, $i);
 
                 Student::updateOrCreate(
@@ -70,27 +69,8 @@ class SchoolStudentsSeeder extends Seeder
                 $schoolCount++;
             }
 
-            $expCount = $school['experimental']['to'] - $school['experimental']['from'] + 1;
-
-            // المجموعة الضابطة
-            for ($i = $school['control']['from']; $i <= $school['control']['to']; $i++) {
-                $code = sprintf('STU%d-%03d', $schoolNum, $i);
-
-                Student::updateOrCreate(
-                    ['code' => $code],
-                    [
-                        'school_name' => $school['name'],
-                        'group' => StudentGroup::CONTROL,
-                        'is_active' => true,
-                    ]
-                );
-                $schoolCount++;
-            }
-
-            $ctrlCount = $school['control']['to'] - $school['control']['from'] + 1;
             $totalCreated += $schoolCount;
-
-            $this->command->info("✅ {$school['name']} (STU{$schoolNum}): {$expCount} تجريبية ");
+            $this->command->info("✅ {$school['name']} (STU{$schoolNum}): {$schoolCount} طالب");
         }
 
         $this->command->info("🎓 الإجمالي: {$totalCreated} طالب في " . count($schools) . " مدارس");

@@ -34,15 +34,7 @@ class StudentResource extends Resource
                     ->label('المدرسة')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('group')
-                    ->label('المجموعة')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => $state instanceof StudentGroup ? $state->label() : $state)
-                    ->color(fn ($state): string => match ($state instanceof StudentGroup ? $state->value : $state) {
-                        'experimental' => 'success',
-                        'control' => 'warning',
-                        default => 'gray',
-                    }),
+
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('نشط')
                     ->boolean(),
@@ -58,12 +50,6 @@ class StudentResource extends Resource
             ])
             ->defaultSort('code')
             ->filters([
-                SelectFilter::make('group')
-                    ->label('المجموعة')
-                    ->options([
-                        'experimental' => 'مجموعة تجريبية',
-                        'control' => 'مجموعة ضابطة',
-                    ]),
                 SelectFilter::make('school_name')
                     ->label('المدرسة')
                     ->options(fn () => Student::distinct()->pluck('school_name', 'school_name')->toArray()),
@@ -156,13 +142,8 @@ class StudentResource extends Resource
                 ->required()
                 ->unique(ignoreRecord: true)
                 ->placeholder('مثال: STU1-001'),
-            Forms\Components\Select::make('group')
-                ->label('المجموعة')
-                ->options([
-                    'experimental' => 'مجموعة تجريبية',
-                    'control' => 'مجموعة ضابطة',
-                ])
-                ->required(),
+            Forms\Components\Hidden::make('group')
+                ->default('experimental'),
             Forms\Components\TextInput::make('school_name')
                 ->label('اسم المدرسة')
                 ->required()
