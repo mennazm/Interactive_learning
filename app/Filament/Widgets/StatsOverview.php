@@ -13,8 +13,6 @@ class StatsOverview extends BaseWidget
     protected function getStats(): array
     {
         $totalStudents = Student::where('is_active', true)->count();
-        $experimentalCount = Student::where('group', 'experimental')->where('is_active', true)->count();
-        $controlCount = Student::where('group', 'control')->where('is_active', true)->count();
 
         $totalSessions = LearningSession::count();
         $completedSessions = LearningSession::where('status', 'completed')->count();
@@ -29,7 +27,7 @@ class StatsOverview extends BaseWidget
 
         return [
             Stat::make('إجمالي الطلبة', $totalStudents)
-                ->description("تجريبية: {$experimentalCount} | ضابطة: {$controlCount}")
+                ->description("طالب مسجل في المنصة")
                 ->icon('heroicon-o-user-group')
                 ->color('primary'),
 
@@ -44,7 +42,7 @@ class StatsOverview extends BaseWidget
                 ->color('info'),
 
             Stat::make('نسبة الإجابات الصحيحة', $totalTurns > 0 ? round(($correctTurns / $totalTurns) * 100) . '%' : '0%')
-                ->description("{$correctTurns} صحيحة من {$totalTurns} دور")
+                ->description("{$correctTurns} صحيحة من {$totalTurns} إجابة")
                 ->icon('heroicon-o-check-circle')
                 ->color('warning'),
         ];
