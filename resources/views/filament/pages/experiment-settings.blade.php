@@ -7,11 +7,24 @@
             <div class="space-y-4">
                 <div>
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">تاريخ البداية</label>
-                    <input type="text" wire:model="experiment_start_date"
-                           placeholder="YYYY-MM-DD"
-                           pattern="\d{4}-\d{2}-\d{2}"
-                           dir="ltr"
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+                    <input type="text" id="exp-date-picker" wire:model="experiment_start_date"
+                           placeholder="Pick a date..."
+                           dir="ltr" readonly
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white cursor-pointer" />
+                    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            flatpickr('#exp-date-picker', {
+                                dateFormat: 'Y-m-d',
+                                locale: 'en',
+                                allowInput: false,
+                                onChange: function(selectedDates, dateStr) {
+                                    @this.set('experiment_start_date', dateStr);
+                                }
+                            });
+                        });
+                    </script>
                 
 
                 @if($this->experiment_start_date)
