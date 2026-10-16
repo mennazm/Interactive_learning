@@ -7,10 +7,12 @@
             <div class="space-y-4">
                 <div>
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">تاريخ البداية</label>
-                <div dir="ltr" lang="en">
-                    <input type="date" wire:model="experiment_start_date"
+                    <input type="text" wire:model="experiment_start_date"
+                           placeholder="YYYY-MM-DD (e.g. 2026-10-20)"
+                           onfocus="this.type='date'" onblur="if(!this.value)this.type='text'"
+                           dir="ltr"
                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                </div>
+                
 
                 @if($this->experiment_start_date)
                 <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
