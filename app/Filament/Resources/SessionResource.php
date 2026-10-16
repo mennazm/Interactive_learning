@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SessionResource\Pages;
+use App\Filament\Resources\SessionResource\RelationManagers;
 use App\Models\Session as LearningSession;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -47,7 +48,11 @@ class SessionResource extends Resource
                     ->dateTime('Y-m-d H:i')
                     ->sortable(),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort('created_at', 'desc')
+            ->actions([
+                Tables\Actions\ViewAction::make()
+                    ->label('عرض المحادثة'),
+            ]);
     }
 
     public static function form(Form $form): Form
@@ -55,10 +60,19 @@ class SessionResource extends Resource
         return $form->schema([]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\ConversationTurnsRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListSessions::route('/'),
+            'view' => Pages\ViewSession::route('/{record}'),
         ];
     }
 }
+
