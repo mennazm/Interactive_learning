@@ -26,7 +26,7 @@ class StatsOverview extends BaseWidget
         $avgMin = $avgDuration ? round($avgDuration / 60, 1) : 0;
 
         return [
-            Stat::make('إجمالي الطلبة', $totalStudents)
+            Stat::make('إجمالي الطلاب', $totalStudents)
                 ->description("طالب مسجل في المنصة")
                 ->icon('heroicon-o-user-group')
                 ->color('primary'),
