@@ -16,9 +16,9 @@ class StudentResource extends Resource
 {
     protected static ?string $model = Student::class;
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationLabel = 'الطلبة';
+    protected static ?string $navigationLabel = 'الطلاب';
     protected static ?string $modelLabel = 'طالب';
-    protected static ?string $pluralModelLabel = 'الطلبة';
+    protected static ?string $pluralModelLabel = 'الطلاب';
     protected static ?int $navigationSort = 1;
 
     public static function table(Table $table): Table
