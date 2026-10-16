@@ -7,7 +7,8 @@
             <div class="space-y-4">
                 <div>
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">تاريخ البداية</label>
-                    <input type="date" wire:model="experiment_start_date" lang="en" dir="ltr" style="direction: ltr; text-align: left;"
+                <div dir="ltr" lang="en">
+                    <input type="date" wire:model="experiment_start_date"
                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                 </div>
 
